@@ -17,7 +17,7 @@
     </xsl:template>
     
     <xsl:template match="file">
-<!--        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
+        <!--<xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
         <pwc-topic>
             
             <xsl:choose>
@@ -306,12 +306,15 @@
         
         <xsl:variable name="width" select="substring-before(normalize-space(@style), ';')"/>
         <xsl:variable name="height" select="substring-after(normalize-space(@style), ';')"/>
-        <data>
-            <object>
+        <!--<data>-->
+            <image>
                 <xsl:if test="@name">
-                    <xsl:attribute name="name">
+                    <xsl:attribute name="alt">
                         <xsl:value-of select="@name"/>
                     </xsl:attribute>
+                </xsl:if>
+                <xsl:if test="@src">
+                    <xsl:attribute name="href" select="replace(substring-after(@src, '\'), '.OB', '.jpg')"/>
                 </xsl:if>
                 <xsl:choose>
                     <xsl:when test="contains(@style, 'width:') and contains(@style, 'height:')">
@@ -323,8 +326,8 @@
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:apply-templates/>
-            </object>
-        </data>
+            </image>
+        <!--</data>-->
     </xsl:template>
     
     <xsl:template match="a[not(@href) and not(@name) and not(normalize-space())]"/>
@@ -349,6 +352,23 @@
             <xsl:apply-templates/>
         </pwc-xref>
         </xsl:if>
+    </xsl:template>
+    
+    <xsl:template match="link">
+        <xsl:variable name="extention" select="substring-after(substring-after(@href, 'Data\'), '.')"/>
+        <pwc-xref>
+            <xsl:if test="@href">
+                <xsl:attribute name="href" select="substring-after(@href, 'Data\')"/>
+            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="$extention = 'pdf'">
+                    <xsl:attribute name="format" select="$extention"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="format" select="$extention"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </pwc-xref>
     </xsl:template>
     
     <xsl:template match="br"/>

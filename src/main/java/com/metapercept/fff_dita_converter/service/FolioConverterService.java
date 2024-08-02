@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 
 @Service
@@ -46,6 +43,9 @@ public class FolioConverterService {
 
         // Generate config.yaml
         String configFilePath = generateConfigYaml(extractedDir, fffFilePath);
+
+        // Process .ob and .pdf files
+        processFiles(extractedDir);
 
         // Run the FolioXML export process
         try {
@@ -136,6 +136,29 @@ public class FolioConverterService {
         if (result != 0) {
             throw new IOException("FolioXML export failed with exit code: " + result);
         }
+    }
+
+    private void processFiles(String extractedDir) throws IOException {
+        Path dataDir = Paths.get("output/finalOutput/data");
+        Path imagesDir = Paths.get("output/finalOutput/images");
+        Files.createDirectories(dataDir);
+        Files.createDirectories(imagesDir);
+
+        Files.walk(Paths.get(extractedDir))
+                .filter(Files::isRegularFile)
+                .forEach(file -> {
+                    try {
+                        String fileName = file.getFileName().toString();
+                        if (fileName.endsWith(".pdf")) {
+                            Files.copy(file, dataDir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+                        } else if (fileName.endsWith(".OB")) {
+                            String newFileName = fileName.substring(0, fileName.length() - 3) + ".jpg";
+                            Files.copy(file, imagesDir.resolve(newFileName), StandardCopyOption.REPLACE_EXISTING);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }
 

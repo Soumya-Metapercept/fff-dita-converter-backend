@@ -5,6 +5,7 @@ import com.metapercept.fff_dita_converter.model.ResponseModel;
 import com.metapercept.fff_dita_converter.service.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,9 @@ import org.springframework.http.HttpHeaders;
 
 import java.io.File;
 import java.io.FileInputStream;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/api")
@@ -32,12 +36,15 @@ public class ConversionController {
     private SharedConfig sharedConfig;
     @Autowired
     private CleanupService cleanupService;
+    @Autowired
+    private LogStreamingService logService;
 
     @GetMapping("/convert")
        public ResponseEntity<ResponseModel> convert() {
         long startTime = System.currentTimeMillis();
         try {
             // Convert Folio files to XML
+            System.out.println("Starting conversion process...");
             ResponseEntity<ResponseModel> folioResponse = folioConverterService.convertFolioFiles();
             if (folioResponse.getStatusCode().isError()) {
                 return folioResponse;
@@ -61,15 +68,15 @@ public class ConversionController {
             xrefFixerService.fixXrefs(jsonFilePath);
 
             // Create ZIP file of final output
-            String sourceDirPath = "output/finalOutput";
-            String zipFilePath = "output/finalOutput.zip";
-            zipService.createZipFile(sourceDirPath, zipFilePath);
+//            String sourceDirPath = "output/finalOutput";
+//            String zipFilePath = "output/finalOutput.zip";
+//            zipService.createZipFile(sourceDirPath, zipFilePath);
 
             // Set the path to the ZIP file in SharedConfig
-            sharedConfig.setZipFilePath(zipFilePath);
+//            sharedConfig.setZipFilePath(zipFilePath);
 
             // Perform the cleanup operation
-            cleanupService.cleanUpDirectories(zipFilePath);
+//            cleanupService.cleanUpDirectories(zipFilePath);
 
            ResponseModel response = new ResponseModel("Conversion done successfully.", null);
            return ResponseEntity.ok(response);
@@ -83,4 +90,11 @@ public class ConversionController {
             System.out.println("Total time taken for FFF-DITA conversion: " + (totalTime / 1000) + " seconds.");
         }
     }
+//    @GetMapping("/logs")
+//
+//    public SseEmitter streamLogs() {
+//
+//        return logService.registerClient();
+//
+//    }
 }

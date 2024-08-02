@@ -11,10 +11,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.metapercept.fff_dita_converter.service.ZipService;
+import com.metapercept.fff_dita_converter.service.CleanupService;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/api")
@@ -28,9 +31,15 @@ public class FileController {
     @Autowired
     private SharedConfig sharedConfig;
 
+    @Autowired
+    private CleanupService cleanupService;
+
     @PostMapping("/upload")
     public ResponseEntity<ResponseModel> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
+            // Clean up any existing files
+            cleanupService.cleanUpDirectories(null);
+
             zipService.saveUploadedFile(file);
             ResponseModel response = new ResponseModel("File uploaded successfully.", null);
             return ResponseEntity.ok(response);
@@ -43,17 +52,23 @@ public class FileController {
 
     @GetMapping("/download")
     public ResponseEntity<InputStreamResource> download() {
-        String zipFilePath = sharedConfig.getZipFilePath();
-        if (zipFilePath == null || zipFilePath.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        String sourceDirPath = "output/finalOutput";
+        // Format the current date and time to append to the zip file name
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String dateTime = LocalDateTime.now().format(formatter);
+        String zipFilePath = "output/finalOutput_" + dateTime + ".zip";
 
-        File zipFile = new File(zipFilePath);
-        if (!zipFile.exists()) {
+        File sourceDir = new File(sourceDirPath);
+        if (!sourceDir.exists() || sourceDir.listFiles().length == 0) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         try {
+            System.out.println("Creating ZIP file...");
+            zipService.createZipFile(sourceDirPath, zipFilePath);
+
+            System.out.println("Downloading file...");
+            File zipFile = new File(zipFilePath);
             InputStreamResource resource = new InputStreamResource(new FileInputStream(zipFile));
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zipFile.getName());
@@ -64,8 +79,17 @@ public class FileController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(resource);
 
-            // Delete the ZIP file after the response is sent
-            zipFile.delete();
+            System.out.println("File downloaded successfully.");
+
+            // Cleanup will be done in a separate thread to ensure the response is sent before deletion
+            new Thread(() -> {
+                try {
+                    Thread.sleep(5000); // Wait for 5 seconds before cleanup
+                    cleanupService.cleanUpDirectories(zipFilePath);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
 
             return response;
         } catch (IOException e) {

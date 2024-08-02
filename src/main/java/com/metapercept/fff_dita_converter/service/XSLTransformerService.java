@@ -41,7 +41,7 @@ public class XSLTransformerService {
         long startTime = System.currentTimeMillis();
         try {
             // Paths to the XSLT files
-            Resource cpaDelayerXSLT = resourceLoader.getResource(xsltPath + "cpa_delayer.xsl");
+            Resource cpaDelayerXSLT = resourceLoader.getResource(xsltPath + "cpa_delayer_v2.xsl");
             Resource xmlToDitaXSLT = resourceLoader.getResource(xsltPath + "XmlToDita.xsl");
             Resource tableXSLT = resourceLoader.getResource(xsltPath + "table.xsl");
             Resource cleanupXSLT = resourceLoader.getResource(xsltPath + "cleanup.xsl");
@@ -73,7 +73,7 @@ public class XSLTransformerService {
             System.out.println("Starting transformation process...");
 
             // Perform the initial transformation to get the DITA files
-            transform(myconfigXmlFile, cpaDelayerXSLT.getFile(), intermediateDir1, "cpa_delayer.xsl");
+            transform(myconfigXmlFile, cpaDelayerXSLT.getFile(), intermediateDir1, "cpa_delayer_v2.xsl");
 
             // Log the files generated in intermediateDir1
             logDirectoryContents(intermediateDir1, ".dita");
@@ -104,6 +104,10 @@ public class XSLTransformerService {
 
             // Merge the tempOutputDir with finalOutputDir
             mergeDirectories(tempOutputDir, finalOutputDir);
+
+            // Copy data and images directories to finalOutputDir
+            //copyDirectory(Paths.get("output/data"), finalOutputDir.toPath().resolve("data"));
+            //copyDirectory(Paths.get("output/images"), finalOutputDir.toPath().resolve("images"));
 
             System.out.println("All transformations completed successfully.");
 
@@ -237,4 +241,14 @@ public class XSLTransformerService {
                 .map(Path::toFile)
                 .orElse(null);
     }
+
+//    private static void copyDirectory(Path source, Path target) throws IOException {
+//        Files.walk(source).forEach(path -> {
+//            try {
+//                Files.copy(path, target.resolve(source.relativize(path)), StandardCopyOption.REPLACE_EXISTING);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
 }

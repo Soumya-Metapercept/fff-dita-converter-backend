@@ -15,11 +15,11 @@ public class SharedConfig {
         this.myConfigXmlFilePath = myConfigXmlFilePath;
     }
 
-    public String getZipFilePath() {
-        return zipFilePath;
-    }
-
-    public void setZipFilePath(String zipFilePath) {
-        this.zipFilePath = zipFilePath;
-    }
+//    public String getZipFilePath() {
+//        return zipFilePath;
+//    }
+//
+//    public void setZipFilePath(String zipFilePath) {
+//        this.zipFilePath = zipFilePath;
+//    }
 }
