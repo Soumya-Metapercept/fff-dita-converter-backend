@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 
-
 @Service
 public class FolioConverterService {
 
@@ -44,7 +43,7 @@ public class FolioConverterService {
         // Generate config.yaml
         String configFilePath = generateConfigYaml(extractedDir, fffFilePath);
 
-        // Process .ob and .pdf files
+        // Process .ob files and entire "Data" folder
         processFiles(extractedDir);
 
         // Run the FolioXML export process
@@ -149,7 +148,10 @@ public class FolioConverterService {
                 .forEach(file -> {
                     try {
                         String fileName = file.getFileName().toString();
-                        if (fileName.endsWith(".pdf")) {
+                        Path parentDir = file.getParent().getFileName();
+
+                        // Check if the file is inside the "Data" folder
+                        if ("Data".equalsIgnoreCase(parentDir.toString())) {
                             Files.copy(file, dataDir.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
                         } else if (fileName.endsWith(".OB")) {
                             String newFileName = fileName.substring(0, fileName.length() - 3) + ".jpg";
@@ -161,4 +163,3 @@ public class FolioConverterService {
                 });
     }
 }
-

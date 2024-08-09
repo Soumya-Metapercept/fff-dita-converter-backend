@@ -31,13 +31,20 @@ public class ConversionController {
     @Autowired
     private XrefFixerService xrefFixerService;
     @Autowired
+    private ImageHrefExtractorService imageHrefExtractorService;
+    @Autowired
+    private ImageHrefFixerService imageHrefFixerService;
+    @Autowired
+    private DataHrefExtractorService dataHrefExtractorService;
+    @Autowired
+    private DataHrefFixerService dataHrefFixerService;
+    @Autowired
     private ZipService zipService;
     @Autowired
     private SharedConfig sharedConfig;
     @Autowired
     private CleanupService cleanupService;
-    @Autowired
-    private LogStreamingService logService;
+
 
     @GetMapping("/convert")
        public ResponseEntity<ResponseModel> convert() {
@@ -57,15 +64,29 @@ public class ConversionController {
                         .body(new ResponseModel("myconfig.xml file not found.", null));
             }
 
-            // Set the myconfig.xml file path in SharedConfig
+          // Set the myconfig.xml file path in SharedConfig
             sharedConfig.setMyConfigXmlFilePath(myconfigXmlFile.getAbsolutePath());
 
             // Extract Xrefs from the myconfig.xml file
-            String jsonFilePath = xrefExtractorService.extractXrefs();
+            String linkJsonFilePath = xrefExtractorService.extractXrefs();
+
+            // Extract Image Hrefs from the myconfig.xml file
+            String imageJsonFilePath = imageHrefExtractorService.extractImageHrefs();
+
+            // Extract Data Hrefs from the myconfig.xml file
+            String dataJsonFilePath = dataHrefExtractorService.extractDataHrefs();
 
             // Convert XML to DITA
             xslTransformerService.convertXMLToDITA();
-            xrefFixerService.fixXrefs(jsonFilePath);
+
+            // Fix Xrefs in DITA files
+            xrefFixerService.fixXrefs(linkJsonFilePath);
+
+            // Fix Image Hrefs in DITA files
+            imageHrefFixerService.fixImageHrefs(imageJsonFilePath);
+
+            // Fix Data Hrefs in DITA files
+            dataHrefFixerService.fixDataHrefs(dataJsonFilePath);
 
             // Create ZIP file of final output
 //            String sourceDirPath = "output/finalOutput";

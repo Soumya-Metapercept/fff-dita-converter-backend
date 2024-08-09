@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +46,9 @@ public class XrefExtractorService {
         }
         File myconfigXmlFile = new File(myconfigXmlFilePath);
 
+        // Prepare JSON arrays
+        JsonArray linkJsonArray = new JsonArray();
+
         try {
             // Parse the XML file
             Document doc = Jsoup.parse(myconfigXmlFile, "UTF-8");
@@ -63,9 +65,6 @@ public class XrefExtractorService {
                     idToFileAttributesMap.put(id, new FileAttributes(uriFragment, fileHeading));
                 }
             }
-
-            // Prepare a JSON array to hold the results
-            JsonArray jsonArray = new JsonArray();
 
             // Find all <a> tags with class="Jump"
             Elements jumpLinks = doc.select("a.Jump");
@@ -119,16 +118,17 @@ public class XrefExtractorService {
                 jsonObject.add("refFileNo.", new JsonPrimitive(refFileNo));
 
                 // Add the JSON object to the JSON array
-                jsonArray.add(jsonObject);
+                linkJsonArray.add(jsonObject);
             }
 
-            // Write the JSON array to the output file
+            // Write the link JSON array to the output file
             try (FileWriter fileWriter = new FileWriter(outputFilePath)) {
                 Gson gson = new Gson();
-                gson.toJson(jsonArray, fileWriter);
+                gson.toJson(linkJsonArray, fileWriter);
             }
 
-            System.out.println("JSON file created successfully: " + outputFilePath);
+            System.out.println("Link JSON file created successfully: " + outputFilePath);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

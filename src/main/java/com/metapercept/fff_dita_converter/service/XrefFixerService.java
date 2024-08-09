@@ -34,19 +34,25 @@ public class XrefFixerService {
 
         // Create a map for fast lookup based on orgFileID
         Map<String, List<Map<String, String>>> orgFileIdToMappings = new HashMap<>();
+
         for (JsonElement element : mappings) {
             JsonObject obj = element.getAsJsonObject();
-            String orgFileID = obj.get("orgFileID").getAsString().substring(1); // Remove the leading '#'
-            String refFileId = obj.get("refFileId").getAsString().substring(1); // Remove the leading '#'
-            String refFileName = obj.get("refFileName").getAsString();
-            String refFileNo = obj.get("refFileNo.").getAsString().substring(1); // Remove the leading '#'
 
-            Map<String, String> mapping = new HashMap<>();
-            mapping.put("refFileId", refFileId);
-            mapping.put("refFileName", refFileName);
-            mapping.put("refFileNo", refFileNo);
+            // Safely access keys in the JSON object
+            String orgFileID = getStringFromJsonObject(obj, "orgFileID", true);
 
-            orgFileIdToMappings.computeIfAbsent(orgFileID, k -> new ArrayList<>()).add(mapping);
+            // Handle <a> tag data
+            String refFileId = getStringFromJsonObject(obj, "refFileId", true);
+            String refFileName = getStringFromJsonObject(obj, "refFileName", false);
+            String refFileNo = getStringFromJsonObject(obj, "refFileNo.", true);
+
+            if (refFileId != null && refFileName != null && refFileNo != null) {
+                Map<String, String> mapping = new HashMap<>();
+                mapping.put("refFileId", refFileId);
+                mapping.put("refFileName", refFileName);
+                mapping.put("refFileNo", refFileNo);
+                orgFileIdToMappings.computeIfAbsent(orgFileID, k -> new ArrayList<>()).add(mapping);
+            }
         }
 
         // Walk the file tree once and collect all relevant files
@@ -165,5 +171,22 @@ public class XrefFixerService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * Retrieves a string from the JsonObject, optionally removing a leading '#' character.
+     *
+     * @param obj       The JsonObject to retrieve the value from.
+     * @param key       The key for the value to retrieve.
+     * @param removeHash If true, removes a leading '#' character from the value.
+     * @return The processed string value, or null if the key is not present.
+     */
+    private String getStringFromJsonObject(JsonObject obj, String key, boolean removeHash) {
+        if (!obj.has(key) || obj.get(key).isJsonNull()) {
+            return null;
+        }
+        String value = obj.get(key).getAsString();
+        return removeHash && value.startsWith("#") ? value.substring(1) : value;
     }
 }
