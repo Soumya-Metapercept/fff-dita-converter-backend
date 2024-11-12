@@ -17,7 +17,7 @@
     </xsl:template>
 
     <xsl:template match="file">
-<!--        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
+        <!--<xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
         <pwc-topic>
 
             <xsl:choose>
@@ -73,19 +73,6 @@
         </pwc-body>
     </xsl:template>
 
-    <xsl:template match="div[@title = 'Popup']">
-        <p>
-            <ph>
-                <fn callout="">
-                    <xsl:if test="@id">
-                        <xsl:attribute name="id" select="replace(@id, '_', '-')"/>
-                    </xsl:if>
-                    <xsl:apply-templates/>
-                </fn>
-            </ph>
-        </p>
-    </xsl:template>
-
     <xsl:template match="div">
         <xsl:apply-templates/>
     </xsl:template>
@@ -126,9 +113,6 @@
 
     <xsl:template match="p">
         <p>
-            <xsl:if test="@class">
-                <xsl:attribute name="outputclass" select="@class"/>
-            </xsl:if>
             <xsl:choose>
                 <xsl:when test="span/a/@id">
                     <xsl:attribute name="id" select="span/a/@id"/>
@@ -163,7 +147,6 @@
     <xsl:template match="table">
         <xsl:variable name="colWidths" select="tokenize(@data-colWidths, ',')"/>
         <table>
-            <xsl:attribute name="outputclass" select="'ruled'"/>
             <tgroup>
                 <xsl:attribute name="cols">
                     <xsl:variable name="cols1" select="@data-colWidths"/>
@@ -398,11 +381,6 @@
 
     <xsl:template match="a">
         <xsl:variable name="href" select="substring-after(@href, '#')"/>
-        <!-- <xsl:variable name="href1" select="replace(substring-after(@onclick, 'maincontentId:'))"/>-->
-        <xsl:variable name="href1"
-            select="replace(substring-after(@onclick, 'maincontentId:'), '_', '-')"/>
-        <xsl:variable name="href2" select="normalize-space(replace($href1, '&apos;'&apos;, ''))"/>
-        <xsl:variable name="href3" select="concat('#', $href2)"/>
         <xsl:if test="normalize-space()">
             <pwc-xref>
                 <xsl:choose>
@@ -411,9 +389,6 @@
                     </xsl:when>
                     <xsl:when test="starts-with($href, 'db')">
                         <xsl:attribute name="href" select="concat('#', $href)"/>
-                    </xsl:when>
-                    <xsl:when test="@href = '#'">
-                        <xsl:attribute name="href" select="substring-before($href3, ','[1])"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="href" select="@href"/>

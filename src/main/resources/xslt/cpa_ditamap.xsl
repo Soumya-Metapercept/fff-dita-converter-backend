@@ -23,7 +23,7 @@
                     </title>
                 </xsl:if>
                 <xsl:for-each select="file[@heading and @level = 'Level 1']">
-                <xsl:variable name="heading1" select="tokenize(@heading, '\s+')"/>
+                <xsl:variable name="heading1" select="tokenize(lower-case(@heading), '\s+')"/>
                 <xsl:variable name="first_10_words1" select="string-join($heading1[position() &lt;= 10], ' ')"/>
                 <xsl:variable name="Title1"
                     select="translate($first_10_words1, translate($first_10_words1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -41,7 +41,7 @@
     </xsl:template>
     
     <xsl:template match="file[@heading and @level = 'Level 1']">
-        <xsl:variable name="heading1" select="tokenize(@heading, '\s+')"/>
+        <xsl:variable name="heading1" select="tokenize(lower-case(@heading), '\s+')"/>
         <xsl:variable name="first_10_words1" select="string-join($heading1[position() &lt;= 10], ' ')"/>
         <xsl:variable name="Title1"
             select="translate($first_10_words1, translate($first_10_words1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -60,7 +60,7 @@
                         <xsl:attribute name="navtitle" select="@heading"/>
                     </xsl:if>
                     <xsl:for-each select="children/file[@heading and @level = 'Level 2']">
-                        <xsl:variable name="heading2" select="tokenize(@heading, '\s+')"/>
+                        <xsl:variable name="heading2" select="tokenize(lower-case(@heading), '\s+')"/>
                         <xsl:variable name="first_10_words2" select="string-join($heading2[position() &lt;= 10], ' ')"/>
                         <xsl:variable name="Title2"
                             select="translate($first_10_words2, translate($first_10_words2, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -80,7 +80,7 @@
         </xsl:result-document>
         
         <xsl:for-each select="children/file[@heading and @level = 'Level 2']">
-            <xsl:variable name="heading2" select="tokenize(@heading, '\s+')"/>
+            <xsl:variable name="heading2" select="tokenize(lower-case(@heading), '\s+')"/>
             <xsl:variable name="first_10_words2" select="string-join($heading2[position() &lt;= 10], ' ')"/>
             <xsl:variable name="Title2"
                 select="translate($first_10_words2, translate($first_10_words2, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -101,7 +101,7 @@
                         </xsl:if>
                         <xsl:for-each select="children/file[@heading and @level = 'Level 3']">
                             
-                            <xsl:variable name="heading3" select="tokenize(@heading, '\s+')"/>
+                            <xsl:variable name="heading3" select="tokenize(lower-case(@heading), '\s+')"/>
                             <xsl:variable name="first_10_words3" select="string-join($heading3[position() &lt;= 10], ' ')"/>
                             <xsl:variable name="Title3"
                                 select="translate($first_10_words3, translate($first_10_words3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -123,7 +123,7 @@
             </xsl:result-document>
             
             <xsl:for-each select="children/file[@heading and @level = 'Level 3']">
-                <xsl:variable name="heading3" select="tokenize(@heading, '\s+')"/>
+                <xsl:variable name="heading3" select="tokenize(lower-case(@heading), '\s+')"/>
                 <xsl:variable name="first_10_words3" select="string-join($heading3[position() &lt;= 10], ' ')"/>
                 <xsl:variable name="Title3"
                     select="translate($first_10_words3, translate($first_10_words3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -143,7 +143,7 @@
                                 <xsl:attribute name="navtitle" select="@heading"/>
                             </xsl:if>
                             <xsl:for-each select="children/file[@heading and @level = 'Level 4']">
-                                <xsl:variable name="heading4" select="tokenize(@heading, '\s+')"/>
+                                <xsl:variable name="heading4" select="tokenize(lower-case(@heading), '\s+')"/>
                                 <xsl:variable name="first_10_words4" select="string-join($heading4[position() &lt;= 10], ' ')"/>
                                 <xsl:variable name="Title4"
                                     select="translate($first_10_words4, translate($first_10_words4, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -161,7 +161,7 @@
                 </xsl:result-document>
                 
                 <xsl:for-each select="children/file[@heading and @level = 'Level 4']">
-                    <xsl:variable name="heading4" select="tokenize(@heading, '\s+')"/>
+                    <xsl:variable name="heading4" select="tokenize(lower-case(@heading), '\s+')"/>
                     <xsl:variable name="first_10_words4" select="string-join($heading4[position() &lt;= 10], ' ')"/>
                     <xsl:variable name="Title4"
                         select="translate($first_10_words4, translate($first_10_words4, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -181,7 +181,7 @@
                                     <xsl:attribute name="navtitle" select="@heading"/>
                                 </xsl:if>
                                 <xsl:for-each select="children/file[@heading and @level = 'Level 5']">
-                                    <xsl:variable name="heading5" select="tokenize(@heading, '\s+')"/>
+                                    <xsl:variable name="heading5" select="tokenize(lower-case(@heading), '\s+')"/>
                                     <xsl:variable name="first_10_words5" select="string-join($heading5[position() &lt;= 10], ' ')"/>
                                     <xsl:variable name="Title5"
                                         select="translate($first_10_words5, translate($first_10_words5, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -200,7 +200,7 @@
                         </map>
                     </xsl:result-document>
                     <xsl:for-each select="children/file[@heading and @level = 'Level 5']">
-                        <xsl:variable name="heading5" select="tokenize(@heading, '\s+')"/>
+                        <xsl:variable name="heading5" select="tokenize(lower-case(@heading), '\s+')"/>
                         <xsl:variable name="first_10_words5" select="string-join($heading5[position() &lt;= 10], ' ')"/>
                         <xsl:variable name="Title5"
                             select="translate($first_10_words5, translate($first_10_words5, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -220,7 +220,7 @@
                                         <xsl:attribute name="navtitle" select="@heading"/>
                                     </xsl:if>
                                     <xsl:for-each select="children/file[@heading and @level = 'Level 6']">
-                                        <xsl:variable name="heading6" select="tokenize(@heading, '\s+')"/>
+                                        <xsl:variable name="heading6" select="tokenize(lower-case(@heading), '\s+')"/>
                                         <xsl:variable name="first_10_words6" select="string-join($heading6[position() &lt;= 10], ' ')"/>
                                         <xsl:variable name="Title6"
                                             select="translate($first_10_words6, translate($first_10_words6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -232,7 +232,7 @@
                                                 <xsl:attribute name="navtitle" select="@heading"/>
                                             </xsl:if>
                                             <xsl:for-each select="children/file[@heading and @level = 'Level 7']">
-                                                <xsl:variable name="heading7" select="tokenize(@heading, '\s+')"/>
+                                                <xsl:variable name="heading7" select="tokenize(lower-case(@heading), '\s+')"/>
                                                 <xsl:variable name="first_10_words7" select="string-join($heading7[position() &lt;= 10], ' ')"/>
                                                 <xsl:variable name="Title7"
                                                     select="translate($first_10_words7, translate($first_10_words7, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -244,7 +244,7 @@
                                                         <xsl:attribute name="navtitle" select="@heading"/>
                                                     </xsl:if>
                                                     <xsl:for-each select="children/file[@heading and @level = 'Level 8']">
-                                                        <xsl:variable name="heading8" select="tokenize(@heading, '\s+')"/>
+                                                        <xsl:variable name="heading8" select="tokenize(lower-case(@heading), '\s+')"/>
                                                         <xsl:variable name="first_10_words8" select="string-join($heading8[position() &lt;= 10], ' ')"/>
                                                         <xsl:variable name="Title8"
                                                             select="translate($first_10_words8, translate($first_10_words8, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -256,7 +256,7 @@
                                                                 <xsl:attribute name="navtitle" select="@heading"/>
                                                             </xsl:if>
                                                             <xsl:for-each select="children/file[@heading and @level = 'Level 9']">
-                                                                <xsl:variable name="heading9" select="tokenize(@heading, '\s+')"/>
+                                                                <xsl:variable name="heading9" select="tokenize(lower-case(@heading), '\s+')"/>
                                                                 <xsl:variable name="first_10_words9" select="string-join($heading9[position() &lt;= 10], ' ')"/>
                                                                 <xsl:variable name="Title9"
                                                                     select="translate($first_10_words9, translate($first_10_words9, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -268,7 +268,7 @@
                                                                         <xsl:attribute name="navtitle" select="@heading"/>
                                                                     </xsl:if>
                                                                     <xsl:for-each select="children/file[@heading and @level = 'Level 10']">
-                                                                        <xsl:variable name="heading10" select="tokenize(@heading, '\s+')"/>
+                                                                        <xsl:variable name="heading10" select="tokenize(lower-case(@heading), '\s+')"/>
                                                                         <xsl:variable name="first_10_words10" select="string-join($heading10[position() &lt;= 10], ' ')"/>
                                                                         <xsl:variable name="Title10"
                                                                             select="translate($first_10_words10, translate($first_10_words10, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -280,7 +280,7 @@
                                                                                 <xsl:attribute name="navtitle" select="@heading"/>
                                                                             </xsl:if>
                                                                             <xsl:for-each select="children/file[@heading and @level = 'Level 11']">
-                                                                                <xsl:variable name="heading11" select="tokenize(@heading, '\s+')"/>
+                                                                                <xsl:variable name="heading11" select="tokenize(lower-case(@heading), '\s+')"/>
                                                                                 <xsl:variable name="first_10_words11" select="string-join($heading11[position() &lt;= 10], ' ')"/>
                                                                                 <xsl:variable name="Title11"
                                                                                     select="translate($first_10_words11, translate($first_10_words11, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -292,7 +292,7 @@
                                                                                         <xsl:attribute name="navtitle" select="@heading"/>
                                                                                     </xsl:if>
                                                                                     <xsl:for-each select="children/file[@heading and @level = 'Level 12']">
-                                                                                        <xsl:variable name="heading12" select="tokenize(@heading, '\s+')"/>
+                                                                                        <xsl:variable name="heading12" select="tokenize(lower-case(@heading), '\s+')"/>
                                                                                         <xsl:variable name="first_10_words12" select="string-join($heading12[position() &lt;= 10], ' ')"/>
                                                                                         <xsl:variable name="Title12"
                                                                                             select="translate($first_10_words12, translate($first_10_words12, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
@@ -304,7 +304,7 @@
                                                                                                 <xsl:attribute name="navtitle" select="@heading"/>
                                                                                             </xsl:if>
                                                                                             <xsl:for-each select="children/file[@heading and @level = 'Level 13']">
-                                                                                                <xsl:variable name="heading13" select="tokenize(@heading, '\s+')"/>
+                                                                                                <xsl:variable name="heading13" select="tokenize(lower-case(@heading), '\s+')"/>
                                                                                                 <xsl:variable name="first_10_words13" select="string-join($heading13[position() &lt;= 10], ' ')"/>
                                                                                                 <xsl:variable name="Title13"
                                                                                                     select="translate($first_10_words13, translate($first_10_words13, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>

@@ -41,11 +41,14 @@ public class XSLTransformerService {
         long startTime = System.currentTimeMillis();
         try {
             // Paths to the XSLT files
-            Resource cpaDelayerXSLT = resourceLoader.getResource(xsltPath + "cpa_delayer_v2.xsl");
+            Resource cpaDelayerXSLT = resourceLoader.getResource(xsltPath + "cpa_delayer.xsl");
             Resource xmlToDitaXSLT = resourceLoader.getResource(xsltPath + "XmlToDita.xsl");
+            Resource bullet_list1XSLT = resourceLoader.getResource(xsltPath + "bullet_list1.xsl");
+            Resource bullet_list2XSLT = resourceLoader.getResource(xsltPath + "bullet_list2.xsl");
             Resource tableXSLT = resourceLoader.getResource(xsltPath + "table.xsl");
             Resource cleanupXSLT = resourceLoader.getResource(xsltPath + "cleanup.xsl");
             Resource cpaDitamapXSLT = resourceLoader.getResource(xsltPath + "cpa_ditamap.xsl");
+//            Resource OLtoULXSLT = resourceLoader.getResource(xsltPath + "OLtoUL.xsl");
 
             // Get the myconfig.xml file path from SharedConfig
             String myconfigXmlFilePath = sharedConfig.getMyConfigXmlFilePath();
@@ -58,7 +61,10 @@ public class XSLTransformerService {
             File intermediateDir1 = new File("output/intermediate1/");
             File intermediateDir2 = new File("output/intermediate2/");
             File intermediateDir3 = new File("output/intermediate3/");
+            File intermediateDir4 = new File("output/intermediate4/");
+            File intermediateDir5 = new File("output/intermediate5/");
             File finalOutputDir = new File("output/finalOutput/");
+//            File fixesOutputDir = new File("output/fixesOutput/");
 
             // Temporary directory for final transformation
             File tempOutputDir = new File("output/tempOutput/");
@@ -67,13 +73,16 @@ public class XSLTransformerService {
             intermediateDir1.mkdirs();
             intermediateDir2.mkdirs();
             intermediateDir3.mkdirs();
+            intermediateDir4.mkdirs();
+            intermediateDir5.mkdirs();
             finalOutputDir.mkdirs();
             tempOutputDir.mkdirs();
+//            fixesOutputDir.mkdirs();
 
             System.out.println("Starting transformation process...");
 
             // Perform the initial transformation to get the DITA files
-            transform(myconfigXmlFile, cpaDelayerXSLT.getFile(), intermediateDir1, "cpa_delayer_v2.xsl");
+            transform(myconfigXmlFile, cpaDelayerXSLT.getFile(), intermediateDir1, "cpa_delayer.xsl");
 
             // Log the files generated in intermediateDir1
             logDirectoryContents(intermediateDir1, ".dita");
@@ -88,36 +97,45 @@ public class XSLTransformerService {
             logDirectoryContents(intermediateDir2, ".dita");
 
             executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-            processDirectoryRecursively(executor, intermediateDir2, tableXSLT.getFile(), intermediateDir3, ".dita", "table.xsl");
+            processDirectoryRecursively(executor, intermediateDir2, bullet_list1XSLT.getFile(), intermediateDir3, ".dita", "bullet_list1.xsl");
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             logDirectoryContents(intermediateDir3, ".dita");
 
             executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-            processDirectoryRecursively(executor, intermediateDir3, cleanupXSLT.getFile(), finalOutputDir, ".dita", "cleanup.xsl");
+            processDirectoryRecursively(executor, intermediateDir3, bullet_list2XSLT.getFile(), intermediateDir4, ".dita", "bullet_list2.xsl");
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            logDirectoryContents(intermediateDir4, ".dita");
+
+            executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+            processDirectoryRecursively(executor, intermediateDir4, tableXSLT.getFile(), intermediateDir5, ".dita", "table.xsl");
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            logDirectoryContents(intermediateDir5, ".dita");
+
+            executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+            processDirectoryRecursively(executor, intermediateDir5, cleanupXSLT.getFile(), finalOutputDir, ".dita", "cleanup.xsl");
             executor.shutdown();
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             logDirectoryContents(finalOutputDir, ".dita");
 
+            //Temporary Fixes processing XSLT
+//            executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+//            processDirectoryRecursively(executor, intermediateDir5, cleanupXSLT.getFile(), finalOutputDir, ".dita", "cleanup.xsl");
+//            executor.shutdown();
+//            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+//            logDirectoryContents(finalOutputDir, ".dita");
+
             // Perform the final transformation to generate the ditamap into a temporary directory
             transform(myconfigXmlFile, cpaDitamapXSLT.getFile(), tempOutputDir, "cpa_ditamap.xsl");
+
 
             // Merge the tempOutputDir with finalOutputDir
             mergeDirectories(tempOutputDir, finalOutputDir);
 
-            // Copy data and images directories to finalOutputDir
-            //copyDirectory(Paths.get("output/data"), finalOutputDir.toPath().resolve("data"));
-            //copyDirectory(Paths.get("output/images"), finalOutputDir.toPath().resolve("images"));
-
             System.out.println("All transformations completed successfully.");
 
-            // Cleanup: Delete intermediate and temporary directories
-//            deleteDirectory(intermediateDir1);
-//            deleteDirectory(intermediateDir2);
-//            deleteDirectory(intermediateDir3);
-//            deleteDirectory(tempOutputDir);
-//
-//            System.out.println("Intermediate and temporary directories deleted.");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -219,20 +237,6 @@ public class XSLTransformerService {
         }
     }
 
-//    private static void deleteDirectory(File directory) {
-//        File[] files = directory.listFiles();
-//        if (files != null) {
-//            for (File file : files) {
-//                if (file.isDirectory()) {
-//                    deleteDirectory(file);
-//                } else {
-//                    file.delete();
-//                }
-//            }
-//        }
-//        directory.delete();
-//    }
-
     public File findMyConfigXmlFile(File directory) throws IOException {
         return Files.walk(directory.toPath())
                 .filter(Files::isRegularFile)
@@ -241,14 +245,4 @@ public class XSLTransformerService {
                 .map(Path::toFile)
                 .orElse(null);
     }
-
-//    private static void copyDirectory(Path source, Path target) throws IOException {
-//        Files.walk(source).forEach(path -> {
-//            try {
-//                Files.copy(path, target.resolve(source.relativize(path)), StandardCopyOption.REPLACE_EXISTING);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
 }

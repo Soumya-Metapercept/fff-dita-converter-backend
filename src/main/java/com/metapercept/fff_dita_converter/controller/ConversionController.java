@@ -14,6 +14,8 @@ import org.springframework.http.HttpHeaders;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +46,12 @@ public class ConversionController {
     private SharedConfig sharedConfig;
     @Autowired
     private CleanupService cleanupService;
+    @Autowired
+    private XmlFileNameUpdaterService xmlFileNameUpdaterService;
+    @Autowired
+    private PopupExtractorService popupExtractorService;
+    @Autowired
+    private PopupFixerService popupFixerService;
 
 
     @GetMapping("/convert")
@@ -64,8 +72,11 @@ public class ConversionController {
                         .body(new ResponseModel("myconfig.xml file not found.", null));
             }
 
-          // Set the myconfig.xml file path in SharedConfig
+            // Set the myconfig.xml file path in SharedConfig
             sharedConfig.setMyConfigXmlFilePath(myconfigXmlFile.getAbsolutePath());
+
+            // **Run XmlFileNameUpdaterService to update the file names**
+            xmlFileNameUpdaterService.updateFileNamesInConfig(myconfigXmlFile.getAbsolutePath());
 
             // Extract Xrefs from the myconfig.xml file
             String linkJsonFilePath = xrefExtractorService.extractXrefs();
@@ -76,11 +87,17 @@ public class ConversionController {
             // Extract Data Hrefs from the myconfig.xml file
             String dataJsonFilePath = dataHrefExtractorService.extractDataHrefs();
 
+            // Extract PopUp from the myconfig.xml file
+            String popupJsonFilePath = popupExtractorService.extractPopupData();
+
             // Convert XML to DITA
             xslTransformerService.convertXMLToDITA();
 
             // Fix Xrefs in DITA files
             xrefFixerService.fixXrefs(linkJsonFilePath);
+
+            // Fix PopupXrefs in DITA files
+            popupFixerService.fixPopups(popupJsonFilePath);
 
             // Fix Image Hrefs in DITA files
             imageHrefFixerService.fixImageHrefs(imageJsonFilePath);
@@ -88,16 +105,25 @@ public class ConversionController {
             // Fix Data Hrefs in DITA files
             dataHrefFixerService.fixDataHrefs(dataJsonFilePath);
 
-            // Create ZIP file of final output
-//            String sourceDirPath = "output/finalOutput";
-//            String zipFilePath = "output/finalOutput.zip";
-//            zipService.createZipFile(sourceDirPath, zipFilePath);
+            // Create ZIP file at the end of the conversion process
+            String sourceDirPath = "output/finalOutput";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+            String dateTime = LocalDateTime.now().format(formatter);
+            String zipFilePath = "output/finalOutput_" + dateTime + ".zip";
 
-            // Set the path to the ZIP file in SharedConfig
-//            sharedConfig.setZipFilePath(zipFilePath);
+            File sourceDir = new File(sourceDirPath);
+            if (!sourceDir.exists() || sourceDir.listFiles().length == 0) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new ResponseModel("No files found to zip.", null));
+            }
 
-            // Perform the cleanup operation
-//            cleanupService.cleanUpDirectories(zipFilePath);
+            // Create the ZIP file
+            System.out.println("Creating ZIP file...");
+            zipService.createZipFile(sourceDirPath, zipFilePath);
+            System.out.println("Created ZIP file.");
+
+            // Store the ZIP file path in sharedConfig so it can be accessed by the download API
+            sharedConfig.setZipFilePath(zipFilePath);
 
            ResponseModel response = new ResponseModel("Conversion done successfully.", null);
            return ResponseEntity.ok(response);
@@ -111,11 +137,4 @@ public class ConversionController {
             System.out.println("Total time taken for FFF-DITA conversion: " + (totalTime / 1000) + " seconds.");
         }
     }
-//    @GetMapping("/logs")
-//
-//    public SseEmitter streamLogs() {
-//
-//        return logService.registerClient();
-//
-//    }
 }

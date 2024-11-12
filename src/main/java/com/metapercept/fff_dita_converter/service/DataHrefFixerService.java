@@ -25,25 +25,27 @@ import java.util.stream.Collectors;
 @Service
 public class DataHrefFixerService {
     private static final String MAIN_FOLDER = "output/finalOutput";
-    private static final String DATA_FOLDER = "output/finalOutput/data";
+    private static final String DATA_FOLDER = "output/finalOutput/cpa/data";
 
     public void fixDataHrefs(String dataJsonFilePath) throws IOException, InterruptedException, ExecutionException {
         long startTime = System.currentTimeMillis();
 
+        // Parse the data JSON file
         JsonArray dataMappings = JsonParser.parseReader(new FileReader(dataJsonFilePath)).getAsJsonArray();
-        Map<String, String> orgFileIdToDataFileNameMap = new HashMap<>();
+        Map<String, List<String>> orgFileIdToDataFileNamesMap = new HashMap<>();
 
+        // Organize data mappings (support multiple data files per orgFileID)
         for (JsonElement element : dataMappings) {
             JsonObject obj = element.getAsJsonObject();
-
             String orgFileID = getStringFromJsonObject(obj, "orgFileID", true);
             String dataFileName = getStringFromJsonObject(obj, "dataFileName", false);
 
             if (orgFileID != null && dataFileName != null) {
-                orgFileIdToDataFileNameMap.put(orgFileID, dataFileName);
+                orgFileIdToDataFileNamesMap.computeIfAbsent(orgFileID, k -> new ArrayList<>()).add(dataFileName);
             }
         }
 
+        // Walk through DITA files
         Map<String, Path> fileMap = Files.walk(Paths.get(MAIN_FOLDER))
                 .filter(Files::isRegularFile)
                 .filter(path -> path.toString().endsWith(".dita"))
@@ -55,13 +57,14 @@ public class DataHrefFixerService {
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         List<Future<?>> futures = new ArrayList<>();
 
-        for (String orgFileID : orgFileIdToDataFileNameMap.keySet()) {
+        // Process each orgFileID
+        for (String orgFileID : orgFileIdToDataFileNamesMap.keySet()) {
             futures.add(executorService.submit(() -> {
                 String orgFileName = findFileNameById(fileMap, orgFileID);
 
                 if (orgFileName != null) {
                     Path orgFilePath = fileMap.get(orgFileName);
-                    updateDataHref(orgFilePath.toFile(), orgFileIdToDataFileNameMap.get(orgFileID));
+                    updateAllDataHrefs(orgFilePath.toFile(), orgFileIdToDataFileNamesMap.get(orgFileID));
                 } else {
                     System.out.println("File not found with ID: " + orgFileID);
                 }
@@ -86,27 +89,35 @@ public class DataHrefFixerService {
                 .orElse(null);
     }
 
-    private void updateDataHref(File orgFile, String dataFileName) {
+    private void updateAllDataHrefs(File orgFile, List<String> dataFileNames) {
         try {
+            // Read the DITA file
             String orgFileContent = Files.readString(orgFile.toPath());
             Document doc = Jsoup.parse(orgFileContent, "", Parser.xmlParser());
             boolean changesMade = false;
 
+            // Find all <pwc-xref> tags with the 'format' attribute
             Elements xrefTags = doc.select("pwc-xref[format]");
+
+            // Update all <pwc-xref> hrefs that match the dataFileNames
             for (Element xrefTag : xrefTags) {
-                String format = xrefTag.attr("format");
                 String href = xrefTag.attr("href");
 
-                if (href.equals(dataFileName)) {
-                    Path orgFilePath = orgFile.toPath().getParent();
-                    Path dataPath = Paths.get(DATA_FOLDER, dataFileName);
-                    Path relativePath = orgFilePath.relativize(dataPath);
+                for (String dataFileName : dataFileNames) {
+                    if (href.equals(dataFileName)) {
+                        // Calculate the relative path to the data file
+                        Path orgFilePath = orgFile.toPath().getParent();
+                        Path dataPath = Paths.get(DATA_FOLDER, dataFileName);
+                        Path relativePath = orgFilePath.relativize(dataPath);
 
-                    xrefTag.attr("href", relativePath.toString().replace("\\", "/"));
-                    changesMade = true;
+                        // Update the href attribute
+                        xrefTag.attr("href", relativePath.toString().replace("\\", "/"));
+                        changesMade = true;
+                    }
                 }
             }
 
+            // Write the updated document back to the DITA file if changes were made
             if (changesMade) {
                 try (FileWriter writer = new FileWriter(orgFile)) {
                     writer.write(doc.outerHtml());

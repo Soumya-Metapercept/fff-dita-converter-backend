@@ -52,21 +52,13 @@ public class FileController {
 
     @GetMapping("/download")
     public ResponseEntity<InputStreamResource> download() {
-        String sourceDirPath = "output/finalOutput";
-        // Format the current date and time to append to the zip file name
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String dateTime = LocalDateTime.now().format(formatter);
-        String zipFilePath = "output/finalOutput_" + dateTime + ".zip";
+        String zipFilePath = sharedConfig.getZipFilePath(); // Get the ZIP file path from sharedConfig
 
-        File sourceDir = new File(sourceDirPath);
-        if (!sourceDir.exists() || sourceDir.listFiles().length == 0) {
+        if (zipFilePath == null || !(new File(zipFilePath).exists())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         try {
-            System.out.println("Creating ZIP file...");
-            zipService.createZipFile(sourceDirPath, zipFilePath);
-
             System.out.println("Downloading file...");
             File zipFile = new File(zipFilePath);
             InputStreamResource resource = new InputStreamResource(new FileInputStream(zipFile));

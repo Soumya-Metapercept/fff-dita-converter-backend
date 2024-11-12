@@ -4,14 +4,49 @@
     exclude-result-prefixes="xs xd" version="2.0">
 
 
-    <xsl:output indent="yes" method="xml" doctype-public="-//PWC//DTD DITA PWC Topic//EN"
-        doctype-system="pwc-topic.dtd" omit-xml-declaration="no" standalone="no"/>
+    <!--<xsl:output indent="yes" method="xml" doctype-public="-//PWC//DTD DITA PWC Topic//EN"
+        doctype-system="F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"
+        omit-xml-declaration="no" standalone="no"/>-->
+
+    <xsl:template match="pwc-topic">
+        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>
+        <pwc-topic>
+            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates/>
+        </pwc-topic>
+    </xsl:template>
+
+    <xsl:template match="map">
+        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE map PUBLIC "-//PWC//DTD DITA PWC Map//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-map.dtd"&gt;</xsl:text>
+        <map>
+            <xsl:apply-templates select="@*"/>
+            <xsl:apply-templates/>
+        </map>
+    </xsl:template>
 
     <!-- Identity transform to copy all nodes -->
     <xsl:template match="@* | node()">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match="title[parent::section]">
+        <xsl:choose>
+            <xsl:when test="not(*)">
+                <xsl:comment>
+                    <xsl:text>&lt;title</xsl:text>
+                    <xsl:text>&gt;</xsl:text>
+                    <xsl:apply-templates select="@* | node()"/>
+                    <xsl:text>&lt;/title&gt;</xsl:text>
+                </xsl:comment>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy>
+                    <xsl:apply-templates select="@* | node()"/>
+                </xsl:copy>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <xsl:template match="p[parent::b] | p[parent::i]">
@@ -21,6 +56,7 @@
     <xsl:template match="b[p]">
         <p>
             <b>
+                <xsl:copy-of select="@*"/>
                 <xsl:apply-templates/>
             </b>
         </p>
@@ -29,6 +65,7 @@
     <xsl:template match="i[p]">
         <p>
             <i>
+                <xsl:copy-of select="@*"/>
                 <xsl:apply-templates/>
             </i>
         </p>
@@ -59,6 +96,12 @@
                         <xsl:value-of select="'center'"/>
                     </xsl:attribute>
                 </xsl:when>
+                <!-- added on 19-09-2024 -->
+                <xsl:when test="@align = 'table_-_ind_x_2'">
+                    <xsl:attribute name="align">
+                        <xsl:value-of select="'left'"/>
+                    </xsl:attribute>
+                </xsl:when>
                 <xsl:when test="@align = 'Paragraph'"/>
                 <xsl:when test="contains(@align, '_dd')"/>
                 <xsl:when test="contains(@align, 'Table_bullet')"/>
@@ -77,6 +120,41 @@
             </xsl:choose>
             <xsl:apply-templates/>
         </entry>
+    </xsl:template>
+
+    <!--  converting ol to ul according to the bullet  -->
+
+    <xsl:template match="ol[li]">
+        <xsl:choose>
+            <xsl:when test="li[starts-with(normalize-space(.), '•')]">
+                <ul>
+                    <xsl:apply-templates select="@* | node()"/>
+                </ul>
+            </xsl:when>
+            <xsl:otherwise>
+                <ol>
+                    <xsl:apply-templates select="@* | node()"/>
+                </ol>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="ph[fn]">
+        <ph>
+            <xsl:apply-templates select="@* | node()"/>
+            <xsl:if test="fn[@id]">
+                <pwc-xref type="fn">
+                    <xsl:attribute name="href">
+                        <xsl:choose>
+                            <xsl:when test="ancestor::pwc-topic[1]/@id">
+                                <xsl:value-of select="concat('#', ancestor::pwc-topic[1]/@id)"
+                                    />/<xsl:value-of select="replace(fn/@id, '_', '-')"/>
+                            </xsl:when>
+                        </xsl:choose>
+                    </xsl:attribute>
+                </pwc-xref>
+            </xsl:if>
+        </ph>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -7,19 +7,19 @@
     xmlns:ditaarch="http://dita.oasis-open.org/architecture/2005/"
     xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
     exclude-result-prefixes="xs xsi mml m xinfo xlink xd ditaarch" version="2.0">
-
+    
     <xsl:output indent="yes"/>
-
+    
     <xsl:template match="node() | @*">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
-
+    
     <xsl:template match="file">
-<!--        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
+        <!--<xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
         <pwc-topic>
-
+            
             <xsl:choose>
                 <xsl:when test="body/div[1]/p/span/a/@id">
                     <xsl:attribute name="id" select="body/div[1]/p/span/a/@id"/>
@@ -40,7 +40,7 @@
                     </xsl:if>
                 </xsl:otherwise>
             </xsl:choose>
-
+            
             <xsl:if test="body/div[1]/p/node()">
                 <title>
                     <xsl:if test="body/div[1]/@id">
@@ -54,7 +54,7 @@
             <xsl:apply-templates/>
         </pwc-topic>
     </xsl:template>
-
+    
     <xsl:template match="body">
         <pwc-body>
             <section>
@@ -68,67 +68,17 @@
                         <xsl:apply-templates select="./div[2]/p/node()"/>
                     </title>
                 </xsl:if>
-                <xsl:apply-templates select="node() except (./div[1], ./div[2])"/>
+                <xsl:apply-templates select="node() except (./div[1],./div[2])"/>
             </section>
         </pwc-body>
     </xsl:template>
-
-    <xsl:template match="div[@title = 'Popup']">
-        <p>
-            <ph>
-                <fn callout="">
-                    <xsl:if test="@id">
-                        <xsl:attribute name="id" select="replace(@id, '_', '-')"/>
-                    </xsl:if>
-                    <xsl:apply-templates/>
-                </fn>
-            </ph>
-        </p>
-    </xsl:template>
-
+    
     <xsl:template match="div">
-        <xsl:apply-templates/>
+         <xsl:apply-templates/>
     </xsl:template>
-
-    <xsl:template
-        match="p[@class = 'bullet' or @class = 'IFRSBoldBullet' or @class = 'Table_bullet']">
-        <li>
-            <xsl:attribute name="style" select="'ListNum1'"/>
-            <xsl:attribute name="outputclass" select="@class"/>
-            <xsl:choose>
-                <xsl:when test="span/a/@id">
-                    <xsl:attribute name="id" select="span/a/@id"/>
-                </xsl:when>
-                <xsl:when test="a/@id">
-                    <xsl:attribute name="id" select="a/@id"/>
-                </xsl:when>
-            </xsl:choose>
-            <xsl:apply-templates/>
-        </li>
-    </xsl:template>
-
-    <xsl:template
-        match="p[@class = 'sub-bullet' or @class = 'IFRSBoldSub-bullet' or @class = 'table_sub_bullet']">
-        <li>
-            <xsl:attribute name="style" select="'ListNum2'"/>
-            <xsl:attribute name="outputclass" select="@class"/>
-            <xsl:choose>
-                <xsl:when test="span/a/@id">
-                    <xsl:attribute name="id" select="span/a/@id"/>
-                </xsl:when>
-                <xsl:when test="a/@id">
-                    <xsl:attribute name="id" select="a/@id"/>
-                </xsl:when>
-            </xsl:choose>
-            <xsl:apply-templates/>
-        </li>
-    </xsl:template>
-
+    
     <xsl:template match="p">
         <p>
-            <xsl:if test="@class">
-                <xsl:attribute name="outputclass" select="@class"/>
-            </xsl:if>
             <xsl:choose>
                 <xsl:when test="span/a/@id">
                     <xsl:attribute name="id" select="span/a/@id"/>
@@ -140,22 +90,22 @@
             <xsl:apply-templates/>
         </p>
     </xsl:template>
-
+    
     <xsl:template name="countCommas">
-        <xsl:param name="string"/>
-        <xsl:param name="count"/>
-
+        <xsl:param name="string" />
+        <xsl:param name="count" />
+        
         <xsl:choose>
             <xsl:when test="contains($string, ',')">
-                <xsl:variable name="remaining" select="substring-after($string, ',')"/>
+                <xsl:variable name="remaining" select="substring-after($string, ',')" />
                 <xsl:call-template name="countCommas">
-                    <xsl:with-param name="string" select="$remaining"/>
-                    <xsl:with-param name="count" select="$count + 1"/>
+                    <xsl:with-param name="string" select="$remaining" />
+                    <xsl:with-param name="count" select="$count + 1" />
                 </xsl:call-template>
             </xsl:when>
             <xsl:otherwise>
                 <!-- Output the final count -->
-                <xsl:value-of select="$count"/>
+                <xsl:value-of select="$count" />
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -163,16 +113,15 @@
     <xsl:template match="table">
         <xsl:variable name="colWidths" select="tokenize(@data-colWidths, ',')"/>
         <table>
-            <xsl:attribute name="outputclass" select="'ruled'"/>
             <tgroup>
                 <xsl:attribute name="cols">
-                    <xsl:variable name="cols1" select="@data-colWidths"/>
+                    <xsl:variable name="cols1" select="@data-colWidths" />
                     <xsl:call-template name="countCommas">
-                        <xsl:with-param name="string" select="$cols1"/>
-                        <xsl:with-param name="count" select="1"/>
+                        <xsl:with-param name="string" select="$cols1" />
+                        <xsl:with-param name="count" select="1" />
                     </xsl:call-template>
                 </xsl:attribute>
-
+                
                 <xsl:choose>
                     <xsl:when test="tr[1]/th">
                         <xsl:for-each select="$colWidths">
@@ -185,7 +134,7 @@
                         </xsl:for-each>
                     </xsl:when>
                 </xsl:choose>
-
+                
                 <xsl:for-each select="tr[@data-rowIsHeader]">
                     <thead>
                         <row>
@@ -204,7 +153,7 @@
             </xsl:if>-->
         </table>
     </xsl:template>
-
+    
     <!--<xsl:template name="mergeHeaderRows">
         <xsl:variable name="headerRows" select="." />
         <xsl:choose>
@@ -215,15 +164,15 @@
             </xsl:when>
         </xsl:choose>
     </xsl:template>-->
-
+    
     <xsl:template match="tr">
         <xsl:if test="not(@data-rowIsHeader)">
-            <row>
-                <xsl:apply-templates/>
-            </row>
+        <row>
+            <xsl:apply-templates/>
+        </row>
         </xsl:if>
     </xsl:template>
-
+    
     <xsl:template match="th">
         <entry>
             <xsl:choose>
@@ -250,8 +199,7 @@
                         <xsl:attribute name="align" select="p/@class[not(contains(., 'bold'))]"/>
                     </xsl:if>
                     <xsl:if test="span/p/@class[not(contains(., 'bold'))]">
-                        <xsl:attribute name="align" select="span/p/@class[not(contains(., 'bold'))]"
-                        />
+                        <xsl:attribute name="align" select="span/p/@class[not(contains(., 'bold'))]"/>
                     </xsl:if>
                 </xsl:otherwise>
             </xsl:choose>
@@ -259,20 +207,20 @@
                 <xsl:variable name="trElem" select="../tr"/>
                 <xsl:variable name="spanValue" select="@colspan"/>
                 <xsl:variable name="precedingTcNumber" select="
-                        sum(for $trElem in preceding-sibling::th
-                        return
-                            (if ($trElem/@colspan) then
-                                ($trElem/@colspan)
-                            else
-                                (1)))"/>
+                    sum(for $trElem in preceding-sibling::th
+                    return
+                    (if ($trElem/@colspan) then
+                    ($trElem/@colspan)
+                    else
+                    (1)))"/>
                 <xsl:attribute name="namest" select="concat('col', $precedingTcNumber + 1)"/>
-                <xsl:attribute name="nameend"
-                    select="concat('col', $precedingTcNumber + $spanValue)"/>
+                <xsl:attribute name="nameend" select="concat('col', $precedingTcNumber + $spanValue)"
+                />
             </xsl:if>
             <xsl:apply-templates/>
         </entry>
     </xsl:template>
-
+    
     <xsl:template match="td">
         <entry>
             <xsl:choose>
@@ -299,8 +247,7 @@
                         <xsl:attribute name="align" select="p/@class[not(contains(., 'bold'))]"/>
                     </xsl:if>
                     <xsl:if test="span/p/@class[not(contains(., 'bold'))]">
-                        <xsl:attribute name="align" select="span/p/@class[not(contains(., 'bold'))]"
-                        />
+                        <xsl:attribute name="align" select="span/p/@class[not(contains(., 'bold'))]"/>
                     </xsl:if>
                 </xsl:otherwise>
             </xsl:choose>
@@ -308,51 +255,42 @@
                 <xsl:variable name="trElem" select="../tr"/>
                 <xsl:variable name="colspanValue" select="@colspan"/>
                 <xsl:variable name="precedingTcNumber" select="
-                        sum(for $trElem in preceding-sibling::td
-                        return
-                            (if ($trElem/@colspan) then
-                                ($trElem/@colspan)
-                            else
-                                (1)))"/>
+                    sum(for $trElem in preceding-sibling::td
+                    return
+                    (if ($trElem/@colspan) then
+                    ($trElem/@colspan)
+                    else
+                    (1)))"/>
                 <xsl:attribute name="namest" select="concat('col', $precedingTcNumber + 1)"/>
                 <xsl:attribute name="nameend"
                     select="concat('col', $precedingTcNumber + $colspanValue)"/>
             </xsl:if>
-
+            
             <xsl:choose>
                 <xsl:when test="p/@class[contains(., 'bold')]">
-                    <p>
-                        <b>
-                            <xsl:apply-templates/>
-                        </b>
-                    </p>
-
+                    <b><xsl:apply-templates/></b>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates/>
                 </xsl:otherwise>
             </xsl:choose>
-
+            
         </entry>
     </xsl:template>
-
-    <xsl:template match="p[@class[contains(., 'bold')] and parent::td]">
-        <xsl:apply-templates/>
-    </xsl:template>
-
+    
     <xsl:template match="span">
         <xsl:choose>
-            <xsl:when test="@style = 'font-style:italic;'">
+            <xsl:when test="@style ='font-style:italic;'">
                 <i>
                     <xsl:apply-templates/>
                 </i>
             </xsl:when>
-            <xsl:when test="@style = 'font-weight:bold;'">
+            <xsl:when test="@style ='font-weight:bold;'">
                 <b>
                     <xsl:apply-templates/>
                 </b>
             </xsl:when>
-            <xsl:when test="@class = 'Superscript'">
+            <xsl:when test="@class ='Superscript'">
                 <sup>
                     <xsl:apply-templates/>
                 </sup>
@@ -363,72 +301,61 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-
+        
     <xsl:template match="object">
-
+        
         <xsl:variable name="width" select="substring-before(normalize-space(@style), ';')"/>
         <xsl:variable name="height" select="substring-after(normalize-space(@style), ';')"/>
         <!--<data>-->
-        <image>
-            <xsl:if test="@name">
-                <xsl:attribute name="alt">
-                    <xsl:value-of select="@name"/>
-                </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@src">
-                <xsl:attribute name="href"
-                    select="replace(substring-after(@src, '\'), '.OB', '.jpg')"/>
-            </xsl:if>
-            <xsl:choose>
-                <xsl:when test="contains(@style, 'width:') and contains(@style, 'height:')">
-                    <xsl:attribute name="width" select="replace($width, 'width:', '')"/>
-                    <xsl:attribute name="height"
-                        select="replace(replace($height, ';', ''), 'height:', '')"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:message select="'Please check @style value in object element'"/>
-                </xsl:otherwise>
-            </xsl:choose>
-            <xsl:apply-templates/>
-        </image>
-        <!--</data>-->
-    </xsl:template>
-
-    <xsl:template match="a[not(@href) and not(@name) and not(normalize-space())]"/>
-
-    <xsl:template match="a">
-        <xsl:variable name="href" select="substring-after(@href, '#')"/>
-        <!-- <xsl:variable name="href1" select="replace(substring-after(@onclick, 'maincontentId:'))"/>-->
-        <xsl:variable name="href1"
-            select="replace(substring-after(@onclick, 'maincontentId:'), '_', '-')"/>
-        <xsl:variable name="href2" select="normalize-space(replace($href1, '&apos;'&apos;, ''))"/>
-        <xsl:variable name="href3" select="concat('#', $href2)"/>
-        <xsl:if test="normalize-space()">
-            <pwc-xref>
+            <image>
+                <xsl:if test="@name">
+                    <xsl:attribute name="alt">
+                        <xsl:value-of select="@name"/>
+                    </xsl:attribute>
+                </xsl:if>
+                <xsl:if test="@src">
+                    <xsl:attribute name="href" select="replace(substring-after(@src, '\'), '.OB', '.jpg')"/>
+                </xsl:if>
                 <xsl:choose>
-                    <xsl:when test="starts-with(@href, '../') and contains(@href, '.')">
-                        <xsl:attribute name="href" select="concat('#', $href)"/>
-                    </xsl:when>
-                    <xsl:when test="starts-with($href, 'db')">
-                        <xsl:attribute name="href" select="concat('#', $href)"/>
-                    </xsl:when>
-                    <xsl:when test="@href = '#'">
-                        <xsl:attribute name="href" select="substring-before($href3, ','[1])"/>
+                    <xsl:when test="contains(@style, 'width:') and contains(@style, 'height:')">
+                        <xsl:attribute name="width" select="replace($width, 'width:', '')"/>
+                        <xsl:attribute name="height" select="replace(replace($height, ';', ''), 'height:', '')"/>                        
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:attribute name="href" select="@href"/>
-                        <xsl:attribute name="scope" select="'external'"/>
-                        <xsl:attribute name="format" select="'html'"/>
+                        <xsl:message select="'Please check @style value in object element'"/>
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:apply-templates/>
-            </pwc-xref>
+            </image>
+        <!--</data>-->
+    </xsl:template>
+    
+    <xsl:template match="a[not(@href) and not(@name) and not(normalize-space())]"/>
+    
+    <xsl:template match="a">
+        <xsl:variable name="href" select="substring-after(@href, '#')"/>
+        <xsl:if test="normalize-space()">
+        <pwc-xref>
+            <xsl:choose>
+                <xsl:when test="starts-with(@href, '../') and contains(@href, '.')">
+                    <xsl:attribute name="href" select="concat('#', $href)"/>
+                </xsl:when>
+                <xsl:when test="starts-with($href, 'db')">
+                    <xsl:attribute name="href" select="concat('#', $href)"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="href" select="@href"/>
+                    <xsl:attribute name="scope" select="'external'"/>
+                    <xsl:attribute name="format" select="'html'"/>
+                </xsl:otherwise>
+            </xsl:choose>
+            <xsl:apply-templates/>
+        </pwc-xref>
         </xsl:if>
     </xsl:template>
-
+    
     <xsl:template match="link">
-        <xsl:variable name="extention"
-            select="substring-after(substring-after(@href, 'Data\'), '.')"/>
+        <xsl:variable name="extention" select="substring-after(substring-after(@href, 'Data\'), '.')"/>
         <pwc-xref>
             <xsl:if test="@href">
                 <xsl:attribute name="href" select="substring-after(@href, 'Data\')"/>
@@ -443,7 +370,7 @@
             </xsl:choose>
         </pwc-xref>
     </xsl:template>
-
+    
     <xsl:template match="br">
         <ph outputclass="newline"/>
     </xsl:template>

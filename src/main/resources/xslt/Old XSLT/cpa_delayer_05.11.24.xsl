@@ -19,10 +19,8 @@
             select="string-join($heading1[position() &lt;= 10], ' ')"/>
         <xsl:variable name="Title1"
             select="translate($first_10_words1, translate($first_10_words1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-        <!--<xsl:variable name="title_heading1" select="replace($Title1, ' ', '_')"/>-->
-        
-        <xsl:variable name="title_heading1" select="lower-case(replace($Title1, ' ', '_'))"/>
-        
+        <xsl:variable name="title_heading1" select="replace($Title1, ' ', '_')"/>
+
         <xsl:variable name="uri" select="substring-after(@uri_fragment, '#')"/>
 
         <xsl:result-document href="cpa/{$title_heading1}/{$title_heading1}_{$uri}.dita">
@@ -38,7 +36,7 @@
                     select="string-join($heading2[position() &lt;= 10], ' ')"/>
                 <xsl:variable name="Title2"
                     select="translate($first_10_words2, translate($first_10_words2, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                <xsl:variable name="title_heading2" select="lower-case(replace($Title2, ' ', '_'))"/>
+                <xsl:variable name="title_heading2" select="replace($Title2, ' ', '_')"/>
 
                 <xsl:variable name="uri" select="substring-after(@uri_fragment, '#')"/>
 
@@ -55,7 +53,7 @@
                             select="string-join($heading3[position() &lt;= 10], ' ')"/>
                         <xsl:variable name="Title3"
                             select="translate($first_10_words3, translate($first_10_words3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                        <xsl:variable name="title_heading3" select="lower-case(replace($Title3, ' ', '_'))"/>
+                        <xsl:variable name="title_heading3" select="replace($Title3, ' ', '_')"/>
 
                         <xsl:variable name="uri" select="substring-after(@uri_fragment, '#')"/>
 
@@ -72,7 +70,8 @@
                                     select="string-join($heading4[position() &lt;= 10], ' ')"/>
                                 <xsl:variable name="Title4"
                                     select="translate($first_10_words4, translate($first_10_words4, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                <xsl:variable name="title_heading4" select="lower-case(replace($Title4, ' ', '_'))"/>
+                                <xsl:variable name="title_heading4"
+                                    select="replace($Title4, ' ', '_')"/>
 
                                 <xsl:variable name="uri"
                                     select="substring-after(@uri_fragment, '#')"/>
@@ -92,7 +91,8 @@
                                             select="string-join($heading5[position() &lt;= 10], ' ')"/>
                                         <xsl:variable name="Title5"
                                             select="translate($first_10_words5, translate($first_10_words5, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                        <xsl:variable name="title_heading5" select="lower-case(replace($Title5, ' ', '_'))"/>
+                                        <xsl:variable name="title_heading5"
+                                            select="replace($Title5, ' ', '_')"/>
 
                                         <xsl:variable name="uri"
                                             select="substring-after(@uri_fragment, '#')"/>
@@ -113,7 +113,8 @@
                                                   select="string-join($heading6[position() &lt;= 10], ' ')"/>
                                                 <xsl:variable name="Title6"
                                                   select="translate($first_10_words6, translate($first_10_words6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                <xsl:variable name="title_heading6" select="lower-case(replace($Title6, ' ', '_'))"/>
+                                                <xsl:variable name="title_heading6"
+                                                  select="replace($Title6, ' ', '_')"/>
 
                                                 <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
@@ -134,7 +135,8 @@
                                                   select="string-join($heading7[position() &lt;= 10], ' ')"/>
                                                   <xsl:variable name="Title7"
                                                   select="translate($first_10_words7, translate($first_10_words7, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                      <xsl:variable name="title_heading7" select="lower-case(replace($Title7, ' ', '_'))"/>
+                                                  <xsl:variable name="title_heading7"
+                                                  select="replace($Title7, ' ', '_')"/>
 
                                                   <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
@@ -155,7 +157,8 @@
                                                   select="string-join($heading8[position() &lt;= 10], ' ')"/>
                                                   <xsl:variable name="Title8"
                                                   select="translate($first_10_words8, translate($first_10_words8, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                      <xsl:variable name="title_heading8" select="lower-case(replace($Title8, ' ', '_'))"/>
+                                                  <xsl:variable name="title_heading8"
+                                                  select="replace($Title8, ' ', '_')"/>
 
                                                   <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
@@ -176,7 +179,8 @@
                                                   select="string-join($heading9[position() &lt;= 10], ' ')"/>
                                                   <xsl:variable name="Title9"
                                                   select="translate($first_10_words9, translate($first_10_words9, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                      <xsl:variable name="title_heading9" select="lower-case(replace($Title9, ' ', '_'))"/>
+                                                  <xsl:variable name="title_heading9"
+                                                  select="replace($Title9, ' ', '_')"/>
 
                                                   <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
@@ -197,7 +201,8 @@
                                                   select="string-join($heading10[position() &lt;= 10], ' ')"/>
                                                   <xsl:variable name="Title10"
                                                   select="translate($first_10_words10, translate($first_10_words10, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                      <xsl:variable name="title_heading10" select="lower-case(replace($Title10, ' ', '_'))"/>
+                                                  <xsl:variable name="title_heading10"
+                                                  select="replace($Title10, ' ', '_')"/>
 
                                                   <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
@@ -218,7 +223,8 @@
                                                   select="string-join($heading11[position() &lt;= 10], ' ')"/>
                                                   <xsl:variable name="Title11"
                                                   select="translate($first_10_words11, translate($first_10_words11, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                      <xsl:variable name="title_heading11" select="lower-case(replace($Title11, ' ', '_'))"/>
+                                                  <xsl:variable name="title_heading11"
+                                                  select="replace($Title11, ' ', '_')"/>
 
                                                   <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
@@ -239,7 +245,8 @@
                                                   select="string-join($heading12[position() &lt;= 10], ' ')"/>
                                                   <xsl:variable name="Title12"
                                                   select="translate($first_10_words12, translate($first_10_words12, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                      <xsl:variable name="title_heading12" select="lower-case(replace($Title12, ' ', '_'))"/>
+                                                  <xsl:variable name="title_heading12"
+                                                  select="replace($Title12, ' ', '_')"/>
 
                                                   <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
@@ -260,7 +267,8 @@
                                                   select="string-join($heading13[position() &lt;= 10], ' ')"/>
                                                   <xsl:variable name="Title13"
                                                   select="translate($first_10_words13, translate($first_10_words13, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ', ''), '')"/>
-                                                      <xsl:variable name="title_heading13" select="lower-case(replace($Title13, ' ', '_'))"/>
+                                                  <xsl:variable name="title_heading13"
+                                                  select="replace($Title13, ' ', '_')"/>
 
                                                   <xsl:variable name="uri"
                                                   select="substring-after(@uri_fragment, '#')"/>
