@@ -58,6 +58,9 @@ public class ConversionController {
        public ResponseEntity<ResponseModel> convert() {
         long startTime = System.currentTimeMillis();
         try {
+            // Clean up all directories except "uploads"
+            cleanupService.cleanUpDirectoriesExclude("uploads");
+
             // Convert Folio files to XML
             System.out.println("Starting conversion process...");
             ResponseEntity<ResponseModel> folioResponse = folioConverterService.convertFolioFiles();

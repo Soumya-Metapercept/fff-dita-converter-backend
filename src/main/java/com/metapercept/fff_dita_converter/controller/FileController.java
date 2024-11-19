@@ -37,8 +37,8 @@ public class FileController {
     @PostMapping("/upload")
     public ResponseEntity<ResponseModel> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            // Clean up any existing files
-            cleanupService.cleanUpDirectories(null);
+            // Clean only the uploads directory
+            cleanupService.cleanSpecificDirectory("uploads");
 
             zipService.saveUploadedFile(file);
             ResponseModel response = new ResponseModel("File uploaded successfully.", null);
@@ -74,15 +74,15 @@ public class FileController {
             System.out.println("File downloaded successfully.");
 
             // Cleanup will be done in a separate thread to ensure the response is sent before deletion
-            new Thread(() -> {
-                try {
-                    Thread.sleep(5000); // Wait for 5 seconds before cleanup
-                    cleanupService.cleanUpDirectories(zipFilePath);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-
+//            new Thread(() -> {
+//                try {
+//                    Thread.sleep(5000); // Wait for 5 seconds before cleanup
+//                    cleanupService.cleanUpDirectories(zipFilePath);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }).start();
+//
             return response;
         } catch (IOException e) {
             e.printStackTrace();
