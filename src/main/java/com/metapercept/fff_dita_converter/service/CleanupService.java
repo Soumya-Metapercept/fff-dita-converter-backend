@@ -10,37 +10,6 @@ import java.nio.file.Paths;
 
 @Service
 public class CleanupService {
-
-//    public void cleanUpDirectories(String zipFilePath) {
-//        Path zipPath = Paths.get(zipFilePath);
-//
-//        // Delete the zip file
-//        try {
-//            Files.deleteIfExists(zipPath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // Delete the upload, exports, temp, and output directories (except the zip file)
-//        deleteDirectory(new File("uploads"));
-//        deleteDirectory(new File("exports"));
-//        deleteDirectory(new File("temp"));
-//        deleteDirectory(new File("output"));
-//    }
-
-//    private void deleteDirectory(File directory) {
-//        File[] files = directory.listFiles();
-//        if (files != null) {
-//            for (File file : files) {
-//                if (file.isDirectory()) {
-//                    deleteDirectory(file);
-//                } else {
-//                    file.delete();
-//                }
-//            }
-//        }
-//        directory.delete();
-//    }
 public void cleanUpDirectories(String zipFilePath) {
     try {
         System.out.println("Starting cleanup...");

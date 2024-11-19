@@ -17,7 +17,7 @@
     </xsl:template>
 
     <xsl:template match="file">
-<!--        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
+        <!--        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE pwc-topic PUBLIC "-//PWC//DTD DITA PWC Topic//EN" "F:\PWC\PWC-Authored-Content-DTD-1.0.6\jcr_root\apps\pwc-madison\dita_resources\com.pwc.doctypes\dtd\pwc-topic.dtd"&gt;</xsl:text>-->
         <pwc-topic>
 
             <xsl:choose>
@@ -65,8 +65,7 @@
                                 <xsl:value-of select="../body/div[2]/@id"/>
                             </xsl:attribute>
                         </xsl:if>
-                        <!--<xsl:apply-templates select="./div[2]/p/node()"/>-->
-                        <xsl:apply-templates select="./div[2]"/>
+                        <xsl:apply-templates select="./div[2]/p/node()"/>
                     </title>
                 </xsl:if>
                 <xsl:apply-templates select="node() except (./div[1], ./div[2])"/>

@@ -49,7 +49,7 @@
         </xsl:choose>
     </xsl:template>
 
-    <xsl:template match="p[parent::b] | p[parent::i] | p[parent::p]">
+    <xsl:template match="p[parent::b] | p[parent::i]">
         <xsl:apply-templates/>
     </xsl:template>
 
@@ -156,4 +156,5 @@
             </xsl:if>
         </ph>
     </xsl:template>
+
 </xsl:stylesheet>

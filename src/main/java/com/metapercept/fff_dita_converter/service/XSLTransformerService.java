@@ -31,7 +31,7 @@ public class XSLTransformerService {
 
     private final ResourceLoader resourceLoader;
     private final SharedConfig sharedConfig;
-
+ 
     public XSLTransformerService(ResourceLoader resourceLoader, SharedConfig sharedConfig) {
         this.resourceLoader = resourceLoader;
         this.sharedConfig = sharedConfig;
